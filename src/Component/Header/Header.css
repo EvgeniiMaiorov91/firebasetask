@@ -1,0 +1,17 @@
+.Header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.addNewTAsk {
+
+    padding: 5px;
+    width: 150px;
+    margin: 0 auto;
+    background-color: #47c9a2;
+    outline: none;
+    border:none;
+    border-radius:10px;
+    font-weight: bold;
+}
