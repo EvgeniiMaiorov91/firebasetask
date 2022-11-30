@@ -1,0 +1,72 @@
+.PopUp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    right: -10px;
+    left: -10px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+}
+
+.PopUpWindow {
+    
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    justify-content: center;
+    background-color: #47c9a2;
+    height: 300px;
+    width: 100%;
+}
+
+label{
+    width: 300px;
+    margin: 2.5px 0;
+}
+
+.PopUpWindow input {
+    width: 300px;
+}
+
+#file{
+    /* position: absolute;
+    z-index: -3; */
+}
+
+/* .PopUpWindow h2 {
+    font-size: 1.4rem;
+}
+
+.PopUpWindow h2:hover {
+    cursor: default;
+} */
+
+.close {
+    font-size: 30px;
+    position: absolute;
+    right: 13px;
+    top: 5px;
+}
+
+.close:hover {
+    cursor: pointer;
+}
+
+.error {
+    color: rgb(235, 118, 118);
+     margin: 2.5px 0;
+    height: 16px;
+    width: 300px;
+}
+
+.editOrAdd{
+    width: 100px;
+    padding: 2px;
+    font-weight: bold;
+}

@@ -1,17 +1,17 @@
 import Row from "../Row/Row";
 import "./List.css";
-function List() {
-    let listArr = ["tony","jack"];
-  return <div className="List">
-    {listArr.length === 0 ? (
-    <div>Add a task!</div>
-  ) : (
-    listArr.map((task,i) => {
-        return <Row name = {task} />
-    })
-   
-  )}
-  </div>
+function List({ files, setFiles }) {
+  return (
+    <div className="List">
+      {files.length === 0 ? (
+        <div>Add a task!</div>
+      ) : (
+        files.map((file, i) => {
+          return <Row key={file.id} name={file} i={i} setFiles={setFiles} />;
+        })
+      )}
+    </div>
+  );
 }
 
 export default List;

@@ -1,7 +1,9 @@
 import "./Row.css";
-function Row({name}) {
-    console.log(name)
-  return <li className="Row">{name}</li>;
+function Row({file, i, setFiles}) {
+    console.log(file);
+  return <li className="Row">
+    <span></span>
+  </li>;
 }
 
 export default Row;
