@@ -1,69 +1,47 @@
 import { useState, useRef } from "react";
 // import { addTodo } from "../../services/todo-service";
-import { craateData } from "../../services/todo-service";
+import { craateData, deleteFile } from "../../services/todo-service";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import "./PopUp.css";
 import dayjs from "dayjs";
 
-
-
-function PopUp(item) {
+function PopUp({ setShow, show, files, setFiles, setLoader }) {
   const [error, setError] = useState("");
-  
+
   const inputFile = useRef(null);
   return (
     <div className="PopUp">
       <form
         className="PopUpWindow"
-        onSubmit={ (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
           setError("");
-          craateData(e, setError);
-          // let title = e.target.title.value.trim();
-          // let description = e.target.description.value.trim();
-          // let completionDate = dayjs(e.target.completionDate.value);
-          // let timeCreate = new Date()
-          // let id = String(timeCreate.getTime())
-          // timeCreate = dayjs(timeCreate);
-          // let maxCompletionDate = timeCreate.add(1, "year");
-          // if (!title || !description || !completionDate) {
-          //   setError("Please fill title, content and completion date");
-          //   return;
-          // } else if (
-          //   completionDate <= timeCreate ||
-          //   completionDate > maxCompletionDate
-          // ) {
-          //   setError("Please enter a valid completion date");
-          //   return;
-          // }
-          // completionDate = completionDate.format("DD-MM-YYYY");
-          // let files = e.target.file.files;
-          // const storage = getStorage();
-          // let urlArr = [];
-          // for (let i = 0; i < files.length; i++) {
-          //   let fileString = `${id}/${files[i].name}`;
-          //   let storageRef = ref(storage, fileString);
-          //   await uploadBytes(storageRef, files[i]);
-          //   let url = await getDownloadURL(storageRef);
-          //   let media = {
-          //     url: url,
-          //     name: files[i].name,
-          //   };
-          //   urlArr.push(media);
-          // }
-          // console.log(id, title, description, completionDate, urlArr);
-          // addTodo(id, title, description, completionDate, urlArr);
+          setLoader(true)
+          craateData(e, setError,show.data,setLoader);
         }}
       >
         <label htmlFor="title">Title</label>
-        <input type="text" name="title" id="title" />
+        <input
+          type="text"
+          name="title"
+          id="title"
+          defaultValue={show.data !== undefined ? show.data.title : ""}
+        />
 
-        <label htmlFor="description">Description</label>
-        <input type="text" name="description" id="description" />
+        <label htmlFor="description" >
+          Description
+        </label>
+        <input
+          defaultValue={show.data !== undefined ? show.data.title : ""}
+          type="text"
+          name="description"
+          id="description"
+        />
 
         <label htmlFor="completionDate">Completion date</label>
         <input
+          defaultValue={show.data !== undefined ? show.data.completionDate.split("-").reverse().join("-"): ""}
           type="date"
           name="completionDate"
           id="completionDate"
@@ -74,6 +52,10 @@ function PopUp(item) {
         <label htmlFor="file">Upload files</label>
         <input
           ref={inputFile}
+          style={{
+            position: show.data !== undefined ? "absolute" : "relative",
+            zIndex: show.data !== undefined ? "-5" : "0",
+          }}
           type="file"
           name="file"
           id="file"
@@ -82,19 +64,55 @@ function PopUp(item) {
             console.log(e);
           }}
         />
-        <div>
-          <button
-            onClick={() => {
-              console.log(inputFile.current);
-            }}
-          >
-            Upload
-          </button>
-          <div></div>
-        </div>
+        {show.data !== undefined && (
+          <div className="loadFilesContainer">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                inputFile.current.click();
+              }}
+            >
+              Upload new files
+            </button>
+            <div className="rowFilesContainer">
+              {show.data.urlArr.map((item, i) => {
+                return (
+                  <span key={i}>
+                    {item.name}
+                    <span
+                      className="deleteFile"
+                      onClick={() => {
+                        let arr = [...files];
+                        let index = arr.findIndex(
+                          (item) => item.id === show.data.id
+                        );
+                        let filePath = `${show.data.id}/${show.data.urlArr[i].name}`;
+                        arr[index].urlArr.splice(i, 1);
+                        setFiles(arr);
+                        deleteFile(arr[index].urlArr, filePath, i)
+                      }}
+                    >
+                      &#10060;
+                    </span>
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <h4 className="error">{error}</h4>
-        <button className="editOrAdd">{item ? "Edit" : "Add"}</button>
-        <span className="close">&#10006;</span>
+        <button className="editOrAdd">
+          {show.data !== undefined ? "Edit" : "Add"}
+        </button>
+        <span
+          className="close"
+          onClick={() => {
+            setShow({ show: false, data: undefined });
+          }}
+        >
+          &#10006;
+        </span>
       </form>
     </div>
   );

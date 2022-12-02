@@ -1,16 +1,24 @@
 import Row from "../Row/Row";
 import "./List.css";
-function List({ files, setFiles }) {
+function List({ todos, setState }) {
   return (
-    <div className="List">
-      {files.length === 0 ? (
+    <ul className="List">
+      {!!todos.length ? (
         <div>Add a task!</div>
       ) : (
-        files.map((file, i) => {
-          return <Row key={file.id} name={file} i={i} setFiles={setFiles} />;
+        todos.map((todo, i) => {
+          return (
+            <Row
+              key={todo.id}
+              todo={todo}
+              i={i}
+              setState={setState}
+              todos={todos}
+            />
+          );
         })
       )}
-    </div>
+    </ul>
   );
 }
 

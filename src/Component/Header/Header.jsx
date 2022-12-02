@@ -1,8 +1,13 @@
 import "./Header.css";
-function Header() {
+function Header({ onClick }) {
   return (
     <div className="Header">
-      <button className="addNewTAsk">ADD</button>
+      <button
+        className="addNewTAsk"
+        onClick={onClick}
+      >
+        ADD
+      </button>
     </div>
   );
 }

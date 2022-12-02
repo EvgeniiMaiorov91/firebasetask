@@ -1,67 +1,64 @@
-import Header from '../Header/Header';
-import List from '../List/List';
-import './App.css';
-import { useState, useEffect } from "react";
-import PopUp from '../PopUp/PopUp';
-import { db } from '../../config/firebase-config';
+import Header from "../Header/Header";
+import List from "../List/List";
+import "./App.css";
+import { useState, useLayoutEffect } from "react";
+import PopUp from "../PopUp/PopUp";
+import { db } from "../../config/firebase-config";
 import { collection, getDocs } from "firebase/firestore";
 
-
-
-
-
 function App() {
-  const [show, setShow] = useState({
-    show: false,
-    data: undefined
-  })
-  const [files, setFiles] = useState([]);
+  // const [show, setShow] = useState({
+  //   show: false,
+  //   data: undefined,
+  // });
 
-    useEffect(() => {
-      const getAll = async () => {
-        const querySnapshot = await getDocs(collection(db, "todos"));
-        console.log(querySnapshot);
-        let arr = []
-        querySnapshot.forEach((doc) => {
-          arr.push( doc.data());
-        });
-        setFiles(arr)
-        console.log(arr)
-      }
-     getAll()
-      console.log("sdasd")
-    },[]);
+  // const [files, setFiles] = useState([]);
+  // const [loader, setLoader] = useState(true);
+
+  const [state, setState] = useState({
+    isShowPopUp: false,
+    editableTodo: undefined,
+    todos: [],
+    isLoading: true,
+  });
+
+  useLayoutEffect(() => {
+    const getAll = async () => {
+      const querySnapshot = await getDocs(collection(db, "todos"));
+      let arr = [];
+      querySnapshot.forEach((doc) => {
+        arr.push(doc.data());
+      });
+      // setFiles(arr);
+      // setLoader(false)
+      setState({ ...state, todos: arr, isLoading: false });
+    };
+    getAll();
+  }, []);
 
   return (
     <div className="App">
-      <Header/>
-      <hr/>
-      <List files = {files} setFiles = {setFiles}  />
-     {
-      show.show && <PopUp/>
-     }
-    
-
-
-
-
-
-
-    
-     {/* <input  type = "file"
-     onChange = {
-         (e) => {
-      console.log(e);
-      setImg1(e.target.value);
-      var reader = new FileReader(e.target.files[0]);
-       url = window.URL.createObjectURL(e.target.files[0])
-     reader.readAsDataURL(e.target.files[0])
-      console.log(reader)
-  
-     }}></input> */}
-     {/* <div>
-      <img src={url} />
-     </div> */}
+      <Header
+        onClick={() => {
+          setState({ ...state, isShowPopUp: true, editableTodo: undefined });
+        }}
+      />
+      <hr />
+      <List todos={state.todos} setState={setState} />
+      {/* {state.show && (
+        <PopUp
+          setShow={setShow}
+          show={state.show}
+          files={files}
+          setFiles={setFiles}
+          setLoader = {setLoader}
+        />
+      )} */}
+      {state.isLoading && (
+        <div className="loader">
+          <div className="lds_dual_ring"></div>
+        </div>
+      )}
     </div>
   );
 }

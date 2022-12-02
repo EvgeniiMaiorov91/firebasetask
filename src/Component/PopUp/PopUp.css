@@ -30,22 +30,10 @@ label{
     margin: 2.5px 0;
 }
 
-.PopUpWindow input {
+.PopUpWindow input
+ {
     width: 300px;
 }
-
-#file{
-    /* position: absolute;
-    z-index: -3; */
-}
-
-/* .PopUpWindow h2 {
-    font-size: 1.4rem;
-}
-
-.PopUpWindow h2:hover {
-    cursor: default;
-} */
 
 .close {
     font-size: 30px;
@@ -69,4 +57,15 @@ label{
     width: 100px;
     padding: 2px;
     font-weight: bold;
+}
+
+.loadFilesContainer .rowFilesContainer{
+    margin-top: 5px;
+    width: 300px;
+}
+.deleteFile{
+    font-size: 14px;
+}
+.deleteFile:hover{
+    cursor: pointer;
 }
