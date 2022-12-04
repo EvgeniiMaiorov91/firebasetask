@@ -4,8 +4,6 @@ function List({ todos, setState }) {
   return (
     <ul className="List">
       {!!todos.length ? (
-        <div>Add a task!</div>
-      ) : (
         todos.map((todo, i) => {
           return (
             <Row
@@ -17,6 +15,8 @@ function List({ todos, setState }) {
             />
           );
         })
+      ) : (
+        <div>Add a task!</div>
       )}
     </ul>
   );

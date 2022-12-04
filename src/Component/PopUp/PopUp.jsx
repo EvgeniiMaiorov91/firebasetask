@@ -1,15 +1,14 @@
 import { useState, useRef } from "react";
-// import { addTodo } from "../../services/todo-service";
-import { craateData, deleteFile } from "../../services/todo-service";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
+import { todoHandler, deleteFile } from "../../services/todo-service";
 import "./PopUp.css";
-import dayjs from "dayjs";
+import { isEmpty, cloneDeep} from "lodash";
 
-function PopUp({ setShow, show, files, setFiles, setLoader }) {
+function PopUp({ setState, state }) {
   const [error, setError] = useState("");
-
+  const [deleteFiles, setDeleteFiles] = useState([])
+  const [copyState, setCopyState] = useState(cloneDeep(state));
   const inputFile = useRef(null);
+  let isEditPopUp = !isEmpty(state.editableTodo)
   return (
     <div className="PopUp">
       <form
@@ -17,8 +16,8 @@ function PopUp({ setShow, show, files, setFiles, setLoader }) {
         onSubmit={(e) => {
           e.preventDefault();
           setError("");
-          setLoader(true)
-          craateData(e, setError,show.data,setLoader);
+          setState({ ...state, isLoading: true });
+          todoHandler(e, setError, setState, state, isEditPopUp, deleteFiles,copyState);
         }}
       >
         <label htmlFor="title">Title</label>
@@ -26,14 +25,12 @@ function PopUp({ setShow, show, files, setFiles, setLoader }) {
           type="text"
           name="title"
           id="title"
-          defaultValue={show.data !== undefined ? show.data.title : ""}
+          defaultValue={isEditPopUp ? state.editableTodo.title : ""}
         />
 
-        <label htmlFor="description" >
-          Description
-        </label>
+        <label htmlFor="description">Description</label>
         <input
-          defaultValue={show.data !== undefined ? show.data.title : ""}
+          defaultValue={isEditPopUp ? state.editableTodo.description : ""}
           type="text"
           name="description"
           id="description"
@@ -41,30 +38,28 @@ function PopUp({ setShow, show, files, setFiles, setLoader }) {
 
         <label htmlFor="completionDate">Completion date</label>
         <input
-          defaultValue={show.data !== undefined ? show.data.completionDate.split("-").reverse().join("-"): ""}
+          defaultValue={
+            isEditPopUp
+              ? state.editableTodo.completionDate.split("-").reverse().join("-")
+              : ""
+          }
           type="date"
           name="completionDate"
           id="completionDate"
-          onInput={(e) => {
-            console.log(e);
-          }}
         />
         <label htmlFor="file">Upload files</label>
         <input
           ref={inputFile}
           style={{
-            position: show.data !== undefined ? "absolute" : "relative",
-            zIndex: show.data !== undefined ? "-5" : "0",
+            position: isEditPopUp ? "absolute" : "relative",
+            zIndex: isEditPopUp ? "-5" : "0",
           }}
           type="file"
           name="file"
           id="file"
           multiple
-          onChange={(e) => {
-            console.log(e);
-          }}
         />
-        {show.data !== undefined && (
+        {isEditPopUp && (
           <div className="loadFilesContainer">
             <button
               onClick={(e) => {
@@ -75,21 +70,26 @@ function PopUp({ setShow, show, files, setFiles, setLoader }) {
               Upload new files
             </button>
             <div className="rowFilesContainer">
-              {show.data.urlArr.map((item, i) => {
+              {copyState.editableTodo.urlArr.map((item, i) => {
                 return (
                   <span key={i}>
                     {item.name}
                     <span
                       className="deleteFile"
                       onClick={() => {
-                        let arr = [...files];
+                        let arr = [...copyState.todos];
                         let index = arr.findIndex(
-                          (item) => item.id === show.data.id
+                          (item) => item.id === copyState.editableTodo.id
                         );
-                        let filePath = `${show.data.id}/${show.data.urlArr[i].name}`;
+                        let filePath = `${copyState.editableTodo.id}/${copyState.editableTodo.urlArr[i].name}`;
                         arr[index].urlArr.splice(i, 1);
-                        setFiles(arr);
-                        deleteFile(arr[index].urlArr, filePath, i)
+                        setCopyState({ ...copyState, todos: arr });
+                        let deleteFile = {
+                          urlArr: arr[index].urlArr,
+                          filePath,
+                        };
+                        setDeleteFiles([...deleteFiles, deleteFile]);
+                        // deleteFile(arr[index].urlArr, filePath);
                       }}
                     >
                       &#10060;
@@ -100,15 +100,17 @@ function PopUp({ setShow, show, files, setFiles, setLoader }) {
             </div>
           </div>
         )}
-
         <h4 className="error">{error}</h4>
-        <button className="editOrAdd">
-          {show.data !== undefined ? "Edit" : "Add"}
-        </button>
+        <button className="editOrAdd">{isEditPopUp ? "Edit" : "Add"}</button>
         <span
           className="close"
-          onClick={() => {
-            setShow({ show: false, data: undefined });
+          onClick={(e) => {
+            e.preventDefault();
+            setState({
+              ...state,
+              isShowPopUp: false,
+              editableTodo: {},
+            });
           }}
         >
           &#10006;

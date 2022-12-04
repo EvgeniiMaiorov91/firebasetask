@@ -5,6 +5,7 @@ import { useState, useLayoutEffect } from "react";
 import PopUp from "../PopUp/PopUp";
 import { db } from "../../config/firebase-config";
 import { collection, getDocs } from "firebase/firestore";
+import {isEmpty} from 'lodash';
 
 function App() {
   // const [show, setShow] = useState({
@@ -17,7 +18,7 @@ function App() {
 
   const [state, setState] = useState({
     isShowPopUp: false,
-    editableTodo: undefined,
+    editableTodo: {},
     todos: [],
     isLoading: true,
   });
@@ -35,25 +36,21 @@ function App() {
     };
     getAll();
   }, []);
-
   return (
     <div className="App">
       <Header
         onClick={() => {
-          setState({ ...state, isShowPopUp: true, editableTodo: undefined });
+          setState({ ...state, isShowPopUp: true, editableTodo: {} });
         }}
       />
       <hr />
       <List todos={state.todos} setState={setState} />
-      {/* {state.show && (
+      {state.isShowPopUp && (
         <PopUp
-          setShow={setShow}
-          show={state.show}
-          files={files}
-          setFiles={setFiles}
-          setLoader = {setLoader}
+          setState={setState}
+          state = {state}
         />
-      )} */}
+      )}
       {state.isLoading && (
         <div className="loader">
           <div className="lds_dual_ring"></div>

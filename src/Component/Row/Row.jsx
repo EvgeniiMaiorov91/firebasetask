@@ -1,56 +1,72 @@
 import "./Row.css";
-import { changeIsDone, deleteTask } from "../../services/todo-service";
+import { changeIsDone, deleteTodo } from "../../services/todo-service";
 import dayjs from "dayjs";
-function Row({ file, i, setFiles, files, setShow }) {
+function Row({ todo, i, setState, todos }) {
   return (
     <li
       className="Row"
       style={{
-        backgroundColor: file.isDone
+        backgroundColor: todo.isDone
           ? "#47c9a2"
           : dayjs(new Date()).format("YYYY-MM-DD") >
-            file.completionDate.split("-").reverse().join("-")
+            todo.completionDate.split("-").reverse().join("-")
           ? "rgb(245, 137, 137)"
           : "white",
       }}
     >
       <div className="rowMainContainer">
-        <h1>{file.title}</h1>
+        <h1>{todo.title}</h1>
         <div className="rowButton">
           <input
             className="checkbox"
             type="checkbox"
-            checked={file.isDone}
+            checked={todo.isDone}
             onChange={(e) => {
-              let arr = [...files];
+              let arr = [...todos];
               arr[i].isDone = e.target.checked;
-              setFiles(arr);
-              changeIsDone(file.id, e.target.checked);
+              setState((prev) => {
+                return {
+                  ...prev,
+                  todos: arr,
+                };
+              });
+              changeIsDone(todo.id, e.target.checked);
             }}
           />
           <span
             onClick={() => {
-              setShow({ show: true, data: file });
+              setState((prev) => {
+                return {
+                  ...prev,
+                  isShowPopUp: true,
+                  editableTodo: todo,
+                };
+              });
             }}
           >
             &#9997;
           </span>
           <span
             onClick={() => {
-              let arr = [...files];
+              let arr = [...todos];
               arr.splice(i, 1);
-              setFiles(arr);
-              deleteTask(file);
+              setState((prev) => {
+                return {
+                  ...prev,
+                  todos: arr,
+                };
+              });
+              deleteTodo(todo);
             }}
           >
             &#10060;
           </span>
         </div>
       </div>
-      <h2>{file.description}</h2>
-      <h3>Completion date: {file.completionDate}</h3>
+      <h2>{todo.description}</h2>
+      <h3>Completion date: {todo.completionDate}</h3>
       <div className="rowFilesContainer">
-        {file.urlArr.map((item, i) => {
+        {todo.urlArr.map((item, i) => {
           return (
             <a
               key={i}
